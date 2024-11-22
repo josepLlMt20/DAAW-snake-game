@@ -14,8 +14,12 @@
     background-color: lightgrey;
 }
 
-.cell.snake {
-    background-color: green;
+.cell.snake1 {
+    background-color: green; /* Serpiente del Jugador 1 */
+}
+
+.cell.snake2 {
+    background-color: blue; /* Serpiente del Jugador 2 */
 }
 
 .cell.food {

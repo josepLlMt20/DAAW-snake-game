@@ -1,4 +1,8 @@
-// src/App.js
+
+import { useState, useEffect } from 'react'; 
+import { useParams } from "react-router-dom"; 
+import { onValue, ref, set, off } from "firebase/database"; 
+import { db } from './base'; 
 
 import React from 'react';
 import GameBoard from './components/GameBoard';
