@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import GameBoard from './GameBoard';
 import PlayerForm from './PlayerForm';
+import Ranking from './Ranking';
 import NotFound from './NotFound';
 
 const Router = () => {
@@ -14,6 +15,9 @@ const Router = () => {
                 {/* Rutas para los jugadores */}
                 <Route path="/snake1" element={<GameBoard player="snake1" />} />
                 <Route path="/snake2" element={<GameBoard player="snake2" />} />
+                    
+                {/* Ruta para el ranking */}
+                <Route path="/score" element={<Ranking />} />
 
                 {/* Ruta para manejar errores */}
                 <Route path="*" element={<NotFound />} />

@@ -13,8 +13,8 @@
 }
 
 /* Título del formulario */
-h1 {
-    font-size: 36px;
+.player-form-container h1 {
+    font-size: 2rem;
     color: #4caf50;
     margin-bottom: 30px;
     text-align: center;
@@ -31,6 +31,7 @@ form {
     gap: 20px;
     width: 100%;
     max-width: 400px;
+    box-sizing: border-box;
 }
 
 /* Input de texto */
@@ -44,7 +45,6 @@ input[type="text"] {
     transition: border-color 0.3s ease;
 }
 
-/* Foco en el input */
 input[type="text"]:focus {
     border-color: #4caf50;
     outline: none;
@@ -73,37 +73,61 @@ input[type="radio"] {
     height: 20px;
 }
 
-/* Botón de envío */
-button {
-    padding: 12px 15px;
-    font-size: 18px;
-    font-weight: bold;
-    color: white;
+/* Grupo de botones */
+.button-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Botón de inicio */
+.start-button {
     background-color: #4caf50;
+    color: white;
+    font-size: 1rem;
+    font-weight: bold;
+    padding: 10px 20px;
     border: none;
     border-radius: 8px;
     cursor: pointer;
     transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-/* Hover y efecto de clic del botón */
-button:hover {
+.start-button:hover {
     background-color: #45a049;
+    transform: translateY(-2px); /* Efecto de levantamiento */
 }
 
-button:active {
-    transform: scale(0.98);
-}
-
-/* Foco del botón */
-button:focus {
+.start-button:focus {
     outline: none;
 }
 
-/* Ajustes para pantallas más pequeñas */
+/* Botón de ver ranking */
+.view-ranking-button {
+    background-color: #2196f3;
+    color: white;
+    font-size: 1rem;
+    font-weight: bold;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.view-ranking-button:hover {
+    background-color: #1e88e5;
+    transform: translateY(-2px); /* Efecto de levantamiento */
+}
+
+.view-ranking-button:focus {
+    outline: none;
+}
+
+/* Media Queries para Pantallas Pequeñas */
 @media (max-width: 500px) {
-    h1 {
-        font-size: 28px;
+    .player-form-container h1 {
+        font-size: 1.5rem;
     }
 
     form {
@@ -111,8 +135,9 @@ button:focus {
         border-radius: 10px;
     }
 
-    button {
-        font-size: 16px;
-        padding: 10px;
+    .start-button,
+    .view-ranking-button {
+        font-size: 0.9rem;
+        padding: 8px 16px;
     }
 }

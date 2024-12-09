@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom'; // Para obtener el estado pasado desde navigate
+import { useNavigate } from 'react-router-dom';
 import '../css/GameBoard.css';
 import { ref, set, onValue } from "firebase/database";
 import { db } from '../base';
@@ -10,6 +11,7 @@ const initialFood = { x: 5, y: 5 };
 const GameBoard = ({ player }) => {
     const location = useLocation(); // Obtener el estado pasado desde navigate
     const playerName = location.state?.playerName || 'Unknown'; // Nombre del jugador
+    const navigate = useNavigate();
 
     const isPlayer1 = player === "1";
     const initialSnake = isPlayer1 ? [{ x: 2, y: 2 }] : [{ x: 7, y: 7 }];
@@ -165,10 +167,10 @@ const GameBoard = ({ player }) => {
                         const cellClass = isOwnSnake
                             ? `${player}`
                             : isOpponentSnake
-                            ? `snake${(player === "snake1") ? "2" : "1"}`
-                            : isFood
-                            ? 'food'
-                            : '';
+                                ? `snake${(player === "snake1") ? "2" : "1"}`
+                                : isFood
+                                    ? 'food'
+                                    : '';
 
                         return (
                             <div
@@ -180,7 +182,14 @@ const GameBoard = ({ player }) => {
                 )}
                 {gameOver && (
                     <div className="game-over show">
-                        Game Over
+                        <p className="game-over-text">
+                            <span className="game-over-title">Game Over</span><br />
+                            ¡Nice try, {playerName}!<br />
+                            Final score: <span className="score-highlight">{score}</span>
+                        </p>
+                        <button className="ranking-button" onClick={() => navigate('/score')}>
+                            Score ranking
+                        </button>
                     </div>
                 )}
             </div>

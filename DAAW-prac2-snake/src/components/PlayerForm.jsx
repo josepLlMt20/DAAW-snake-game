@@ -18,6 +18,10 @@ const PlayerForm = () => {
         navigate(`/${playerType}`, { state: { playerName: name } });
     };
 
+    const handleViewRanking = () => {
+        navigate('/score'); // Asumiendo que la ruta para el ranking es '/score'
+    };
+
     return (
         <div className="player-form-container">
             <h1>Join the Game</h1>
@@ -50,7 +54,12 @@ const PlayerForm = () => {
                         Play as Snake 2
                     </label>
                 </div>
-                <button type="submit">Start Game</button>
+                <div className="button-group">
+                    <button type="submit" className="start-button">Start Game</button>
+                    <button type="button" className="view-ranking-button" onClick={handleViewRanking}>
+                        View Rankings
+                    </button>
+                </div>
             </form>
         </div>
     );
