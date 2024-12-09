@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom'; // Para obtener el estado pasado desde navigate
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import '../css/GameBoard.css';
 import { ref, set, onValue } from "firebase/database";
 import { db } from '../base';
@@ -9,8 +8,8 @@ const boardSize = 10;
 const initialFood = { x: 5, y: 5 };
 
 const GameBoard = ({ player }) => {
-    const location = useLocation(); // Obtener el estado pasado desde navigate
-    const playerName = location.state?.playerName || 'Unknown'; // Nombre del jugador
+    const location = useLocation();
+    const playerName = location.state?.playerName || 'Unknown';
     const navigate = useNavigate();
 
     const isPlayer1 = player === "1";
@@ -20,18 +19,21 @@ const GameBoard = ({ player }) => {
     const [food, setFood] = useState(initialFood);
     const [direction, setDirection] = useState({ x: isPlayer1 ? 1 : -1, y: 0 });
     const [opponentSnake, setOpponentSnake] = useState([]);
-    const [gameOver, setGameOver] = useState(false);
     const [score, setScore] = useState(0);
+    const [gameOver, setGameOver] = useState(false);
+    const [opponentGameOver, setOpponentGameOver] = useState(false);
 
     // Firebase references
     const snakeRef = ref(db, `game/${player}`);
-    const opponentRef = ref(db, `game/snake${isPlayer1 ? "2" : "1"}`);
+    const opponentRef = ref(db, `game/${isPlayer1 ? "2" : "1"}`);
     const foodRef = ref(db, 'game/food');
+    const gameOverRef = ref(db, `game/gameOver${player}`);
+    const opponentGameOverRef = ref(db, `game/gameOver${isPlayer1 ? "2" : "1"}`);
 
     // Enviar puntuación a la API
     const sendScoreToApi = async () => {
         try {
-            const response = await fetch('http://localhost:8080/api/score/add', {
+            const response = await fetch(`/api/api/score/add`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -77,14 +79,11 @@ const GameBoard = ({ player }) => {
         return () => document.removeEventListener('keydown', handleKeyDown);
     }, [direction]);
 
-    // Sincronizar serpiente y comida con Firebase
+    // Sincronizar datos con Firebase
     useEffect(() => {
-        if (!gameOver) {
-            set(snakeRef, snake);
-        }
-    }, [snake, gameOver]);
+        set(snakeRef, snake);
+        set(gameOverRef, gameOver);
 
-    useEffect(() => {
         const unsubscribeOpponent = onValue(opponentRef, (snapshot) => {
             const opponentData = snapshot.val();
             if (opponentData) {
@@ -99,15 +98,25 @@ const GameBoard = ({ player }) => {
             }
         });
 
+        const unsubscribeOpponentGameOver = onValue(opponentGameOverRef, (snapshot) => {
+            const data = snapshot.val();
+            setOpponentGameOver(data || false);
+        });
+
         return () => {
             unsubscribeOpponent();
             unsubscribeFood();
+            unsubscribeOpponentGameOver();
         };
-    }, []);
+    }, [snake, gameOver]);
 
     // Mover serpiente
     useEffect(() => {
-        if (gameOver) return;
+        if (gameOver || opponentGameOver) {
+            setGameOver(true);
+            sendScoreToApi();
+            return;
+        }
 
         const moveSnake = () => {
             const newSnake = [...snake];
@@ -125,7 +134,7 @@ const GameBoard = ({ player }) => {
 
             if (isCollision) {
                 setGameOver(true);
-                sendScoreToApi(); // Enviar el puntaje cuando el jugador pierda
+                set(gameOverRef, true);
                 return;
             }
 
@@ -149,19 +158,19 @@ const GameBoard = ({ player }) => {
 
         const interval = setInterval(moveSnake, 200);
         return () => clearInterval(interval);
-    }, [snake, direction, food, gameOver, opponentSnake, score]);
+    }, [snake, direction, food, gameOver, opponentGameOver, opponentSnake, score]);
 
     return (
         <div className="board-container">
             <div className="info-panel">
-                <h2>Player: {playerName}</h2> {/* Muestra el nombre del jugador */}
+                <h2>Player: {playerName}</h2>
                 <h3>Score: {score}</h3>
             </div>
             <div className="board">
                 {Array.from({ length: boardSize }).map((_, row) =>
                     Array.from({ length: boardSize }).map((_, col) => {
                         const isOwnSnake = snake.some(segment => segment.x === col && segment.y === row);
-                        const isOpponentSnake = opponentSnake.some(segment => segment.x === col && segment.y === row);
+                        const isOpponentSnake = !opponentGameOver && opponentSnake.some(segment => segment.x === col && segment.y === row);
                         const isFood = food.x === col && food.y === row;
 
                         const cellClass = isOwnSnake

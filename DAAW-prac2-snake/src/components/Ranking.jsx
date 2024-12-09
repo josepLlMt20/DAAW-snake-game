@@ -5,12 +5,14 @@ import '../css/Ranking.css';
 const Ranking = () => {
     const [scores, setScores] = useState([]);
     const navigate = useNavigate();
+    const ip_adress = import.meta.env.VITE_IP_ADDRESS; 
+    console.log('IP Address:', ip_adress);
 
     // Obtener puntuaciones de la API
     useEffect(() => {
         const fetchScores = async () => {
             try {
-                const response = await fetch('http://localhost:8080/api/score/getTopScores');
+                const response = await fetch(`/api/api/score/getTopScores`);
                 if (response.ok) {
                     const data = await response.json();
                     setScores(data);
